@@ -51,7 +51,11 @@ def default(rule, key, diff, **_):
         # Дефолтная функция генерации патчей считает, что не бывает команд с одинаковыми
         # ключами и разным значением. При этом unchanged мы так не проверяем, поскольку
         # такие случаи возможны, когда у нас подмешиваются implicit команды
-        assert 0 <= len(diff[op]) <= 1, "Too many %s actions for rows %r" % (op, [x["row"] for x in diff[op]])
+        assert 0 <= len(diff[op]) <= 1, (
+            "Too many '%s' actions for row '%s': %r (It looks like we have multiple "
+            "commands with different parameters for a command that is marked as single-parameter "
+            "in the rulebook)" % (op, rule["regexp"].pattern, [x["row"] for x in diff[op]])
+        )
     if diff[Op.AFFECTED]:
         # При изменении блока нужно вызвать обработку чилдов
         yield (True, diff[Op.AFFECTED][0]["row"], diff[Op.AFFECTED][0]["children"])
